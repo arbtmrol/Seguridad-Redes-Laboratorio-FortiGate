@@ -1,0 +1,46 @@
+config system interface
+    edit "VLAN_Usuarios"
+        set vdom "root"
+        set ip 192.168.8.1 255.255.255.128
+        set allowaccess ping
+        set interface "port2"
+        set vlanid 10
+    next
+    edit "VLAN_Servidores"
+        set vdom "root"
+        set ip 192.168.33.1 255.255.255.240
+        set allowaccess ping
+        set interface "port2"
+        set vlanid 20
+    next
+    edit "VLAN_DB"
+        set vdom "root"
+        set ip 192.168.25.1 255.255.255.240
+        set allowaccess ping
+        set interface "port2"
+        set vlanid 30
+    next
+end
+
+config firewall policy
+    edit 0
+        set name "WEB_TO_DB"
+        set srcintf "VLAN_Servidores"
+        set dstintf "VLAN_DB"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set schedule "always"
+        set service "ALL"
+    next
+    edit 4
+        set name "BLOCK_USERS_TO_DB"
+        set srcintf "VLAN_Usuarios"
+        set dstintf "VLAN_DB"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action deny
+        set schedule "always"
+        set service "ALL"
+    next
+end
